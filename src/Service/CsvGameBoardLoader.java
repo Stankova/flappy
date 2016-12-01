@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -33,9 +35,21 @@ public class CsvGameBoardLoader implements GameBoardLoader {
             // String line = br.readLine();
             String[] line = br.readLine().split(";");
             int typeCount = Integer.parseInt(line[0]);
-
+            //radky s definicemi typu dlazdic
+            
+            Map<String, Tile> tileTypes = new HashMap<>();
+            
             for (int i = 0; i < typeCount; i++) {
-                br.readLine();
+                line = br.readLine().split(";");
+                String tileType = line[0];
+                String clazz = line[1];
+                int x = Integer.parseInt(line[2]);
+                int y = Integer.parseInt(line[3]);
+                int w = Integer.parseInt(line[4]);
+                int h = Integer.parseInt(line[5]);
+                String url = line[6];
+                Tile tile = createTile(clazz,x,y,w,h);
+                tileTypes.put(tileType,tile);
             }
 
             line = br.readLine().split(";");
@@ -43,6 +57,7 @@ public class CsvGameBoardLoader implements GameBoardLoader {
             int colums = Integer.parseInt(line[1]);
             System.out.println(rows + "   " + colums);
            Tile[][] tiles = new Tile[rows][colums];
+           
             for (int i = 0; i < rows; i++) {
                 line = br.readLine().split(";");
 
@@ -56,9 +71,9 @@ public class CsvGameBoardLoader implements GameBoardLoader {
                     else {
                         cell = "";
                     } //povazujeme ji prazdnou
-                    if (!"".equals(cell)) {
-                   tiles[i][j]=new WallTile();
-                    }
+                   
+                   tiles[i][j]= tileTypes.get(cell);				//ziskame odpovidajici typ dlazdice hashmapy
+                    
                 }
             }
             GameBoard gb = new GameBoard(tiles);
@@ -68,5 +83,10 @@ public class CsvGameBoardLoader implements GameBoardLoader {
         }
 
     }
+
+	private Tile createTile(String clazz, int x, int y, int w, int h) {
+		
+		return null;
+	}
 
 }
