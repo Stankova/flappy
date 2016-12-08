@@ -8,13 +8,20 @@ package Service;
 import flappybird3.game.GameBoard;
 import flappybird3.game.Tile;
 import flappybird3.game.tiles.WallTile;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -84,9 +91,26 @@ public class CsvGameBoardLoader implements GameBoardLoader {
 
     }
 
-	private Tile createTile(String clazz, int x, int y, int w, int h) {
-		
-		return null;
+	private Tile createTile(String clazz, int x, int y, int w, int h, String url) {
+		try {
+			//stahnout obrazek z url a ulozit do promenne
+			BufferedImage originalImage = ImageIO.read(new URL(url));
+			//vyriznout odpovidajici sprite z velkoho obrazku s mnoha sprity
+			BufferedImage croppedImage = originalImage.getSubimage(x, y, w, h);
+			//zvetseni/zmenseni obrazku tak, aby sedel na velikost dlazdice
+			BufferedImage resizedImage = new BufferedImage(Tile.size, Tile.size, BufferedImage.TYPE_4BYTE_ABGR);
+			Graphics2D g = resizedImage.createGraphics();
+			g.drawImage(croppedImage, 0, 0, Tile.size, Tile.size, null);
+			//vytvorime odpovidajici typ dlazdice
+			switch (clazz){
+			default: 
+				return new WallTile(resizedImage);
+			}
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Špatná URL pro obrázek"+clazz+":"+url,e);
+		} catch (IOException e) {
+			throw new RuntimeException("Chyba pøi ètení obrázku"+clazz+"z URL"+url,e);
+		}
 	}
 
 }

@@ -9,9 +9,9 @@ public class WallTile implements Tile {
 
 	Image image;
 		
-//	public WallTile(Image image){
-//		this.image=image;
-//	}
+	public WallTile(Image image){
+		this.image=image;
+	}
 	
 	
 	@Override
