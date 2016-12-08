@@ -7,6 +7,7 @@ package Service;
 
 import flappybird3.game.GameBoard;
 import flappybird3.game.Tile;
+import flappybird3.game.tiles.EmptyTile;
 import flappybird3.game.tiles.WallTile;
 
 import java.awt.Graphics2D;
@@ -55,7 +56,7 @@ public class CsvGameBoardLoader implements GameBoardLoader {
                 int w = Integer.parseInt(line[4]);
                 int h = Integer.parseInt(line[5]);
                 String url = line[6];
-                Tile tile = createTile(clazz,x,y,w,h);
+                Tile tile = createTile(clazz,x,y,w,h,url);
                 tileTypes.put(tileType,tile);
             }
 
@@ -103,9 +104,16 @@ public class CsvGameBoardLoader implements GameBoardLoader {
 			g.drawImage(croppedImage, 0, 0, Tile.size, Tile.size, null);
 			//vytvorime odpovidajici typ dlazdice
 			switch (clazz){
-			default: 
+			case "Wall": 
 				return new WallTile(resizedImage);
+			case "Empty":
+				return new EmptyTile(resizedImage);
+			case "Bonus":
+				return new EmptyTile(resizedImage);		//TODO
+			
 			}
+			//ani jedna vetev switch-case nevyhovovala
+			throw new RuntimeException ("Neznamy typ dlazdice"+clazz);
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Špatná URL pro obrázek"+clazz+":"+url,e);
 		} catch (IOException e) {

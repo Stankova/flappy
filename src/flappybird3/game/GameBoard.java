@@ -9,8 +9,8 @@ public class GameBoard implements TickAware {
 		Tile[][] tiles;
 		int shiftX;
 		int viewportWidth = 200;
-                Bird bird;
-                
+        Bird bird;
+        boolean gameOver;      
 		
 		public GameBoard(){
 			tiles = new Tile[20][20];
@@ -25,9 +25,10 @@ public class GameBoard implements TickAware {
                 }
 		/**
 		 * kresl� cely herni sv�t(zdi,bonusy,ptaka) na platno g.
+		 * 
 		 * @param g
 		 */
-		public void  draw(Graphics g){
+		public void  drawAndTestCollisions(Graphics g){
 			//spocitame prvni j-index bunky, kterou ma smysl kreslit (je videt je viewportu)
 			int minJ = shiftX/Tile.size;
 			int maxJ = minJ + viewportWidth/Tile.size +2;
@@ -42,9 +43,36 @@ public class GameBoard implements TickAware {
 					int screenX =j*Tile.size - shiftX;
 					int screenY =i*Tile.size;
 					t.draw(g,screenX,screenY);
-					}
+					//otestujeme moznou kolizi dlazdice s ptakem
+					
+					if(t instanceof WallTile){
+						//dlazdice je typu zed
+						if(bird.collidesWithRectangel(screenX, screenY, Tile.size, Tile.size)){
+							//doslo ke kolizi ptaka s dlazdici
+						System.out.println("Kolize");
+						gameOver=true;
+						
+					}    //dlazdice bonusTile - bonus se bude chovat, dokud neni sezran ptakem, tak videt bude, kdyz
 				}
 			}
-                        bird.draw(g);
+		}
+            //ptak
+			bird.draw(g);
+	}
 }
+			@Override
+			public void tick(long ticksSinceStart){
+			if(!gameOver){
+				shiftX=(int)ticksSinceStart;
+				bird.tick(ticksSinceStart);
+				
+			}
+}
+		public int getHeightPix(){
+			return tiles.length*Tile.size;
+		}
+
+		public int getWidthPix() {
+			return tiles.length*Tile.size;
+		}
 }
